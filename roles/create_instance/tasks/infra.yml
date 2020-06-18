@@ -2,13 +2,6 @@
 - name: Crear nueva instancia
   os_server:
        state: present
-       auth:
-         auth_url: "{{ auth_url }}"
-         username: "{{ username }}"
-         password: "{{ password }}"
-         project_name: "{{ project_name }}"
-         project_id: "{{ project_id }}"
-         user_domain_name: "{{ user_domain_name }}"
        name: "{{ instance_name }}"
        key_name: "{{ key_name }}"
        image: "{{ image }}"

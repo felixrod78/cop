@@ -1,8 +1,4 @@
 ---
-
-auth_url: http://asgard.es.datio:15000/v3/
-username: "frodriguez"
-password: "wald09rfA1"
 project_name: "cop-ansible"
 user_domain_name: "operations"
 project_id: "d0f3b28924d4414d9ac36c0224131d65"
