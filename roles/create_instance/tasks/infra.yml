@@ -8,3 +8,5 @@
        flavor: "{{ flavor }}"
        network: "{{ network }}"
   register: infra
+- debug:
+    var: infra
