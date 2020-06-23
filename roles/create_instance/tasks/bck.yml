@@ -33,11 +33,25 @@
          hostname: "{{ os_hostname }}"
 
 
-- name: Crear instancia Openstack
+#####esta funciona
+---
+- name: Crear nueva instancia
   os_server:
-    image: {{ image }}
-    name: {{ instance_name}}
-    key_name: {{  key_name}}
-    flavor: {{ flavour }}
-    state: present
-    network: {{ network }}
+       state: present
+       name: "{{ instance_name }}"
+       key_name: "{{ key_name }}"
+       image: "{{ image }}"
+       flavor: "{{ flavor }}"
+       network: "{{ network }}"
+     
+  register: infra
+- debug:
+    var: infra
+
+- name: Add CentOS Instance to Inventory
+  add_host: name="webserver" groups="webservers"
+            ansible_ssh_host={{ infra.server.public_v4 }}
+            ansible_user= "cloud-user"
+  register: host
+- debug:
+    var: host 

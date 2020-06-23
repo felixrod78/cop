@@ -1,0 +1,12 @@
+---
+
+- name: Add repository
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: http://repos.fedorapeople.org/repos/jkaluza/httpd24/epel-httpd24.repo
+
+
+
+
+  
