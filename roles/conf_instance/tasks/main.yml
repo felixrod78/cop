@@ -3,9 +3,10 @@
 - import_tasks: repo.yml
   tags:
     - repo
-
-
 - import_tasks: apache.yml
   tags:
     - httpd
+- import_tasks: page.yml
+  tags:
+    - page
     

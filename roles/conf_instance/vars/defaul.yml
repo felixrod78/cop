@@ -1,0 +1,6 @@
+---
+app_user: "apache"
+http_host: "felix.com"
+http_conf: "felix.com.conf"
+http_port: "80"
+disable_default: true
