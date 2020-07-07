@@ -2,6 +2,12 @@
 - hosts: localhost
   roles:
     - create_instance
+- hosts: webservers
+  become: yes
+  gather_facts: yes
+  remote_user: root
+  roles:
+    - conf_instance
 
 
 
