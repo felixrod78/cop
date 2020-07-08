@@ -10,21 +10,19 @@
   template:
     src: "files/index.html.j2"
     dest: "/var/www/{{ http_host }}/index.html"
+    mode: '0755'
 
 - name: Set up Apache virtuahHost
   template:
     src: "files/apache.conf.j2"
-    dest: "/etc/httpd/{{ http_conf }}"
+    dest: "/etc/httpd/conf.d/{{ http_conf }}"
 
-- name: Enable new site
-  shell: /etc/httpd/conf.d/felix.com {{ http_conf }}
-  notify: Reload Apache
+- name: start apache
+  service: 
+    name: httpd
+    state: started
 
 
 
-- name: "UFW - Allow HTTP on port {{ http_port }}"
-  ufw:
-    rule: allow
-    port: "{{ http_port }}"
-    proto: tcp
+
 
