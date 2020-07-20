@@ -9,4 +9,7 @@
 - import_tasks: page.yml
   tags:
     - page
+- import_tasks: cert.yml
+  tags:
+    - cert
     

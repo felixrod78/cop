@@ -3,9 +3,4 @@
 - name: install httpd
   yum:
     name: httpd
-    state: latest  
-- name: crear un text de prueba
-  file:
-    path: /tmp/felix
-    state: touch  
-    
+    state: latest 
