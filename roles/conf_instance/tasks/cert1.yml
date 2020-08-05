@@ -1,0 +1,79 @@
+---
+- name: Install python-pip
+  yum: name=python-pip state=present
+
+- pip:
+    name: cryptography
+
+- name: Creamos las carpetas para las keys del CA
+  file:
+    state: directory
+    path: "{{ cas_keys_path }}"
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Creamos las carpetas para el crt del CA
+  file:
+    state: directory
+    path: "{{ cas_certs_path }}"
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Creamos las carpetas para las keys
+  file:
+    state: directory
+    path: "{{ keys_path }}"
+    owner: root
+    group: root
+    mode: 0700
+ 
+- name: Creamos las carpetas para el csr
+  file:
+    state: directory
+    path: "{{ csrs_path }}"
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Creamos las carpetas para los crt
+  file:
+    state: directory
+    path: "{{ certs_path }}" 
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Copiamos el CA CRT
+  copy: 
+    src: "{{ ca_crt_filename }}"
+    dest: "{{ cas_certs_path }}{{ ca_crt_filename }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copiamos el CA KEY
+  copy: 
+    src: "{{ ca_key_filename }}"
+    dest: "{{ cas_keys_path }}{{ ca_key_filename }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Generamos el CSR
+  openssl_csr:
+    path: "{{ csrs_path }}{{ common_domain_name }}.csr"
+    privatekey_path: "{{ cas_keys_path }}{{ ca_key_filename }}"
+    common_name: "{{ common_domain_name  }}"
+
+- name: Generamos el certificado con el certificado CA dado
+  openssl_certificate:
+    path: "{{ certs_path }}{{ common_domain_name  }}.crt"
+    csr_path: "{{ csrs_path }}{{ common_domain_name  }}.csr"
+    ownca_path: "{{ cas_certs_path }}{{ ca_crt_filename }}"
+    ownca_privatekey_path: "{{ cas_keys_path }}{{ ca_key_filename }}"
+    provider: ownca
+
+- name: Componemos la cadena bundle con el CA
+  shell: "cat {{ certs_path }}{{ common_domain_name  }}.crt {{ cas_certs_path }}{{ ca_crt_filename }} > {{ certs_path }}{{ common_domain_name  }}-bundle.crt"

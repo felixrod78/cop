@@ -21,16 +21,7 @@
     ansible_user: cloud-user
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
-- name: Wait for SSH on the Instance
-  command: >
-    ssh -oBatchMode=yes -oStrictHostKeyChecking=no -i  "{{ public_key_file }}"
-    cloud-user@{{ infra.server.public_v4 }} true
-  register: result
-  until: result|success
-  retries: 2
-  delay: 10
-- debug:
-    var: result
+
 
 
 
