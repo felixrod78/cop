@@ -6,15 +6,23 @@ epel_repo_disable: false
 app_user: "apache"
 http_host: "felix-cop.com"
 http_conf: "felix-cop.com.conf"
+http_ssl_conf: "felix-cop.com-ssl.conf"
 http_port: "80"
 disable_default: true
-acme_challenge_type: http-01
-acme_directory: https://acme-v02.api.letsencrypt.org/directory
-acme_version: 2
-acme_email: felixrod78@gmail.com
-letsencrypt_dir: /etc/letsencrypt
-letsencrypt_keys_dir: /etc/letsencrypt/keys
-letsencrypt_csrs_dir: /etc/letsencrypt/csrs
-letsencrypt_certs_dir: /etc/letsencrypt/certs
-letsencrypt_account_key: /etc/letsencrypt/account/account.key
 domain_name: felix-cop.com
+apache: httpd
+apache_logs: /var/log/httpd/
+apache_dir: /etc/httpd/conf.d/ 
+apache_group: apache
+domain_name: 
+apache_ssl_port: 443 
+ssl_ip: '*'
+log_format: combined
+apache_docroot: /var/www/{{ http_host }}
+crt_file: ca.crt
+key_file: ca.key
+apache_docroot: /var/www/{{ http_host }}
+certs_path: "/etc/pki/tls/certs/{{ http_host }}/"
+path: "/etc/pki/tls/certs/"
+datio_crt_name: "datio.crt"
+datio_key_name: "datio.key"

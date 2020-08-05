@@ -5,74 +5,66 @@
     name: pyOpenSSL
     state: latest
 
-- name: "Create required directories in /etc/letsencrypt"
+- name: Enable mod_ssl on RHEL
+  yum: name=mod_ssl state=present
+  when: ansible_os_family == "RedHat"
+
+
+- name: Carpetas para los certs propios
   file:
-    path: "/etc/letsencrypt/{{ item }}"
     state: directory
+    path: "{{ certs_path }}"
     owner: root
     group: root
-    mode: u=rwx,g=x,o=x
-  with_items:
-  - account
-  - certs
-  - csrs
-  - keys
+    mode: 0700
 
-- name: "Generate a Let's Encrypt account key"
-  shell: "if [ ! -f {{ letsencrypt_account_key }} ]; then openssl genrsa 4096 | sudo tee {{ letsencrypt_account_key }}; fi"
+- name: Copiar crt
+  copy: 
+    src: "{{ crt_file }}"
+    dest: "{{ certs_path }}{{ datio_crt_name }}"
+    owner: root
+    group: root
+    mode: 0644
 
-- name: "Generate Let's Encrypt private key"
-  shell: "openssl genrsa 4096 | sudo tee /etc/letsencrypt/keys/{{ domain_name }}.key"
+- name: Copiar key
+  copy: 
+    src: "{{ key_file }}"
+    dest: "{{ certs_path }}{{ datio_key_name }}"
+    owner: root
+    group: root
+    mode: 0644
 
-- name: "Generate Let's Encrypt CSR"
+- name: "Generamos la key privada del OpenSSL con los valores por defecto"
+  openssl_privatekey:
+    path: "{{ certs_path }}{{ http_host }}.pem"
+
+
+- name: "Generamos la key privada del OpenSSL con los valores por defecto"
+  openssl_privatekey:
+    path: "{{ certs_path }}{{ http_host }}.key"
+
+- name: Generamos el CSR
   openssl_csr:
-    path: /etc/letsencrypt/csrs/{{ domain_name }}.csr
-    privatekey_path: /etc/letsencrypt/keys/{{ domain_name }}.key
-    subject_alt_name: 'DNS:felix-cop.com'
-    
-    
+    path: "{{ certs_path }}{{ http_host }}.csr"
+    privatekey_path:  "{{ certs_path }}{{ http_host }}.key"
+    common_name: "{{ http_host }}"
 
-- name: "Begin Let's Encrypt challenges"
-  letsencrypt:
-    acme_directory: "{{ acme_directory }}"
-    acme_version: "{{ acme_version }}"
-    account_key_src: "{{ letsencrypt_account_key }}"
-    account_email: "{{ acme_email }}"
-    terms_agreed: 1
-    challenge: "{{ acme_challenge_type }}"
-    csr: "{{ letsencrypt_csrs_dir }}/{{ domain_name }}.csr"
-    dest: "{{ letsencrypt_certs_dir }}/{{ domain_name }}.crt"
-    fullchain_dest: "{{ letsencrypt_certs_dir }}/fullchain_{{ domain_name }}.crt"
-    remaining_days: 91
-  register: acme_challenge_felix-cop-com
 
-- name: "Create .well-known/acme-challenge directory"
-  file:
-    path: /var/www/html/.well-known/acme-challenge
-    state: directory
-    owner: root
-    group: root
-    mode: u=rwx,g=rx,o=rx
+- name: Generate an OpenSSL certificate signed with your own CA certificate
+  openssl_certificate:
+    path: "{{ certs_path }}{{ http_host }}.crt"
+    csr_path: "{{ certs_path }}{{ http_host }}.csr"
+    ownca_path: "{{ certs_path }}{{ datio_crt_name }}"
+    ownca_privatekey_path: "{{ certs_path }}{{ datio_key_name }}"
+    provider: ownca
 
-- name: "Implement http-01 challenge files"
-  copy:
-    content: "{{ acme_challenge_felix-cop-com['challenge_data'][item]['http-01']['resource_value'] }}"
-    dest: "/var/www/html/{{ acme_challenge_felix-cop-com['challenge_data'][item]['http-01']['resource'] }}"
-    group: root
-    mode: u=rw,g=r,o=r
-  with_items:
-  - "{{ domain_name }}"
-  - "www.{{ domain_name }}"
+- name: Componemos la cadena bundle con el CA
+  shell: "cat {{ certs_path }}{{ http_host }}.crt {{ certs_path }}{{ datio_crt_name }} > {{ certs_path }}{{ http_host }}-bundle.crt"
 
-- name: "Complete Let's Encrypt challenges"
-  letsencrypt:
-    acme_directory: "{{ acme_directory }}"
-    acme_version: "{{ acme_version }}"
-    account_key_src: "{{ letsencrypt_account_key }}"
-    account_email: "{{ acme_email }}"
-    challenge: "{{ acme_challenge_type }}"
-    csr: "{{ letsencrypt_csrs_dir }}/{{ domain_name }}.csr"
-    dest: "{{ letsencrypt_certs_dir }}/{{ domain_name }}.crt"
-    chain_dest: "{{ letsencrypt_certs_dir }}/chain_{{ domain_name }}.crt"
-    fullchain_dest: "{{ letsencrypt_certs_dir }}/fullchain_{{ domain_name }}"
-    data: "{{ acme_challenge_felix-cop-com }}"
+
+
+
+
+
+
+
