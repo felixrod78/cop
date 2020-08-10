@@ -8,6 +8,7 @@
   remote_user: root
   roles:
     - conf_instance
+    - ddbb
 
 
 

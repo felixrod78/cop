@@ -1,0 +1,10 @@
+---
+- name: install MySQL
+  yum: name={{item}} state=present
+  with_items:
+  - mariadb
+  
+  tags:
+  - mysql
+  - mysql-service
+
