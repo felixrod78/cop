@@ -1,2 +1,10 @@
 ---
-mysql_root_password: "123abc"
+
+  mysql:
+    db: project-database
+    user: myuser
+    password: passwourld
+    privileges: '*.*:ALL'
+    host: '%'
+    bind:
+      - 0.0.0.0

@@ -2,9 +2,47 @@
 - name: install MySQL
   yum: name={{item}} state=present
   with_items:
+  - mariadb-server
+  tags:
   - mariadb
-  
+  - mariadb-service
+
+- name: run mariadb
+  service: name=mariadb state=started enabled=yes
+  tags:
+  - mariadb
+  - mariadb-service
+
+- name: install required python MySQLdb lib to create databases and users
+  yum: name={{item}} state=present
+  with_items:
+      - gcc-c++
+      - MySQL-python
+  tags:
+  - mariadb
+  - mariadb-service
+
+- name: create db user
+  mysql_user: name={{mysql.user}} password={{mysql.password}} priv={{mysql.privileges}} host={{mysql.host}} state=present
+  tags:
+  - mariadb
+  - mariadb-service
+
+- name: create mysql database
+  mysql_db: name={{mysql.db}} state=present
+  tags:
+  - mariadb
+  - mariadb-service
+
+- name: bind mysql remote address
+  ini_file: dest=/etc/my.cnf
+            section=mysqld
+            option=bind-address
+            value={{item}}
+  with_items: mysql.bind
   tags:
   - mysql
-  - mysql-service
+  - mysql-configure
+  notify:
+  - restart mysql
 
