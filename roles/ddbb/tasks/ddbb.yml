@@ -1,48 +1,87 @@
 ---
-- name: install MySQL
-  yum: name={{item}} state=present
+ 
+- name: install mariadb-server
+  yum: name={{ item }} state=present
   with_items:
+  - mariadb
   - mariadb-server
-  tags:
-  - mariadb
-  - mariadb-service
+  - MySQL-python
+  - mysql-connector-python
 
-- name: run mariadb
-  service: name=mariadb state=started enabled=yes
-  tags:
-  - mariadb
-  - mariadb-service
+- name: Start Mysql Service
+  service: 
+    name: mariadb 
+    state: started 
+    enabled: yes
 
-- name: install required python MySQLdb lib to create databases and users
-  yum: name={{item}} state=present
+
+
+- name: Check root pass
+  shell: >
+    mysqladmin -u root status
+  changed_when: false
+  failed_when: false
+  register: root_pwd_check
+
+- name: Set MariaDB root password for the first time (root@localhost)
+  mysql_user:
+    name: root
+    password: "{{ mysql.root_pass }}"
+    host: localhost
+    login_unix_socket: "{{ mysql_sock }}"
+    state: present
+  when: root_pwd_check.rc == 0
+
+- name: Set MariaDB root password for 127.0.0.1, ::1
+  mysql_user:
+    name: root
+    password: "{{ mysql.root_pass }}"
+    host: "{{ item }}"
+    login_user: root
+    login_password: "{{ mysql.root_pass  }}"
+    login_unix_socket: "{{ mysql_sock }}"
+    state: present
   with_items:
-      - gcc-c++
-      - MySQL-python
-  tags:
-  - mariadb
-  - mariadb-service
+    - ::1
+    - 127.0.0.1
+  when: root_pwd_check.rc == 0
 
-- name: create db user
-  mysql_user: name={{mysql.user}} password={{mysql.password}} priv={{mysql.privileges}} host={{mysql.host}} state=present
-  tags:
-  - mariadb
-  - mariadb-service
 
-- name: create mysql database
-  mysql_db: name={{mysql.db}} state=present
-  tags:
-  - mariadb
-  - mariadb-service
 
-- name: bind mysql remote address
-  ini_file: dest=/etc/my.cnf
-            section=mysqld
-            option=bind-address
-            value={{item}}
-  with_items: mysql.bind
-  tags:
-  - mysql
-  - mysql-configure
-  notify:
-  - restart mysql
+
+- name: flush privileges
+  command: 'mysql -ne "{{ item }}" -uroot -p"{{  mysql.root_pass }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  changed_when: False
+ 
+- name: Remove anonymous users
+  mysql_user:
+    name: ''
+    host_all: yes
+    login_user: root
+    login_password: "{{ mysql.root_pass }}"
+    state: absent
+ 
+- name: Remove test database and access to it
+  mysql_db:
+    name: test
+    login_user: root
+    login_password: "{{  mysql.root_pass }}"
+    state: absent
+ 
+- name: Disallow root login remotely
+  command: 'mysql -ne "{{ item }}" -uroot -p"{{  mysql.root_pass }}"'
+  with_items:
+    - DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')
+  changed_when: False
+ 
+- name: flush privileges
+  command: 'mysql -ne "{{ item }}" -uroot -p"{{  mysql.root_pass }}"'
+  with_items:
+    - FLUSH PRIVILEGES
+  changed_when: False
+
+
+
 

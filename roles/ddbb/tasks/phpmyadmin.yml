@@ -1,0 +1,23 @@
+---
+
+- name: Ensure phpMyAdmin is installed.
+  yum:
+    name: phpmyadmin
+    state: present
+
+- name: Copiar vhost
+  copy: 
+    src: files/phpMyAdmin.conf
+    dest: /etc/httpd/conf.d/phpMyAdmin.conf
+    owner: root
+    group: root
+    mode: 0644
+  
+  notify: restart apache
+  
+- name: Define phpmyadmin_config_file.
+  set_fact:
+    phpmyadmin_config_file: "{{ phpmyadmin_config_file }}"
+  when: phpmyadmin_config_file is not defined
+
+
