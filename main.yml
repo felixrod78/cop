@@ -4,10 +4,11 @@
     - create_instance
 - hosts: webservers
   become: yes
-  gather_facts: yes
+  gather_facts: no
   remote_user: root
   roles:
     - conf_instance
+    - ddbb
 
 
 

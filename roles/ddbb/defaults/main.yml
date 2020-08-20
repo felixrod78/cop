@@ -1,0 +1,26 @@
+---
+
+mysql:
+  db: project-database
+  root_user: root
+  old_password: 
+  root_pass: 123123
+  user: myuser
+  password: passwourld
+  privileges: "*.*:ALL,GRANT"
+  hosts:
+    - "127.0.0.1"
+    - "::1"
+    - "localhost"
+    - "%"
+    
+  bind:
+    - 0.0.0.0
+mysql_sock: "/var/lib/mysql/mysql.sock"
+phpmyadmin_mysql_host: "{{ mysql.host }}"
+phpmyadmin_mysql_port: ""
+phpmyadmin_mysql_socket: ""
+phpmyadmin_mysql_connect_type: tcp
+phpmyadmin_mysql_user: "{{ mysql.user }}"
+phpmyadmin_mysql_password: "{{ mysql.password }}"
+phpmyadmin_config_file: /etc/phpMyAdmin/config.inc.php

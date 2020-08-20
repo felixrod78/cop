@@ -1,14 +1,10 @@
 ---
 
-- name: install latest pyOpenSSL if needed
-  pip:
-    name: pyOpenSSL
-    state: latest
-
 - name: Enable mod_ssl on RHEL
-  yum: name=mod_ssl state=present
-  when: ansible_os_family == "RedHat"
-
+  yum: 
+    name: mod_ssl 
+    state: present
+  
 
 - name: Carpetas para los certs propios
   file:

@@ -1,0 +1,9 @@
+---
+
+- import_tasks: ddbb.yml
+  tags:
+    - ddbb
+- import_tasks: phpmyadmin.yml
+  tags:
+    - ddbb
+    - phpmyadmin

@@ -26,3 +26,4 @@ certs_path: "/etc/pki/tls/certs/{{ http_host }}/"
 path: "/etc/pki/tls/certs/"
 datio_crt_name: "datio.crt"
 datio_key_name: "datio.key"
+
