@@ -9,6 +9,7 @@
   roles:
     - conf_instance
     - ddbb
+    - monitoring
 
 
 
