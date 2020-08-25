@@ -1,0 +1,44 @@
+---
+
+- name: Install dependencies for Centos
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - autoconf
+    - automake
+    - cmake
+    - curl
+    - elfutils-libelf-devel
+    - gcc
+    - git
+    - Judy-devel
+    - libmnl-devel
+    - libuuid-devel
+    - libuv-devel
+    - lm_sensors
+    - lz4-devel
+    - make
+    - MySQL-python
+    - nc
+    - openssl-devel
+    - pkgconfig
+    - python
+    - python-psycopg2
+    - PyYAML
+    - zlib-devel
+    - zlib-devel
+
+- name: Clone netdata repo for install files
+  git:
+    repo: https://github.com/firehol/netdata.git
+    depth: "1"
+    dest: /opt/netdata
+  
+
+- name: Build and install netdata
+  shell: ./netdata-installer.sh --dont-wait
+  args:
+    chdir: /opt/netdata
+  
+
