@@ -1,0 +1,24 @@
+---
+
+- name: Create Backups folder
+  file: path={{ remote_bk_dir }} state=directory
+
+- name: Dump databases
+  mysql_db:
+    login_user: "{{ mysql.root_user }}"
+    login_host: localhost
+    login_password: "{{ mysql.root_pass }}"
+    name: "{{ item }}"
+    state: dump
+    target: "{{ remote_bk_dir }}/{{ item }}_{{ansible_date_time.date}}_db.sql.gz"
+  with_items: "{{ mysql.db }}"
+
+- name: Fetch databases backups
+  become: true
+  fetch: src="{{ remote_bk_dir }}/{{ item }}_{{ansible_date_time.date}}_db.sql.gz" dest={{ local_bk_dir }}
+  with_items: "{{ mysql.db }}"
+  tags:
+    - databases
+
+
+
