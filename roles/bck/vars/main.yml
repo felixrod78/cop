@@ -1,0 +1,14 @@
+---
+remote_bk_dir: /var/bck
+local_bk_dir: /tmp/bck
+db_host: yourDbHost
+db_user: yourBluehostUsername
+db_pass: yourBluehostPassword
+databases:
+   - yourBluehostUsername_db1
+   - yourBluehostUsername_db2
+folders:
+  - name: felix-cop-{{ansible_date_time.date}}.tar
+    folder: /var/www/
+your_name: yourName
+your_email: yourEmail
