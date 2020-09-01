@@ -1,0 +1,6 @@
+---
+remote_bk_dir: /var/bck
+local_bk_dir: /tmp/bck
+folders:
+  - name: felix-cop-{{ansible_date_time.date}}.tar
+    folder: /var/www/

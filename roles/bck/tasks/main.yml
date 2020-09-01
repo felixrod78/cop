@@ -1,0 +1,10 @@
+---
+
+- import_tasks: bckfiles.yml
+  tags:
+    - bckfiles
+    - bck
+- import_tasks: bckddbb.yml
+  tags:
+    - bckddbb
+    - bck

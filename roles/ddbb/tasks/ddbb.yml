@@ -63,12 +63,12 @@
     login_password: "{{ mysql.root_pass }}"
     state: absent
  
-- name: Remove test database and access to it
+- name: Create cop database and access to it
   mysql_db:
-    name: test
+    name: "{{ mysql.db }}"
     login_user: root
     login_password: "{{  mysql.root_pass }}"
-    state: absent
+    state: present
  
 - name: Disallow root login remotely
   command: 'mysql -ne "{{ item }}" -uroot -p"{{  mysql.root_pass }}"'
