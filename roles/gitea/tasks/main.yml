@@ -1,0 +1,5 @@
+# test git clone  ssh://cloud-user@172.16.49.35/home/cloud-user/felix-cop.git  OK 
+---
+
+- include: install.yml
+- include: service.yml
