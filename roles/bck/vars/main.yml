@@ -1,6 +1,16 @@
 ---
 remote_bk_dir: /var/bck
 local_bk_dir: /tmp/bck
-folders:
-  - name: felix-cop-{{ansible_date_time.date}}.tar
-    folder: /var/www/
+remote_bk_target: /var/www/
+bck_file_name: felix-cop-{{ ansible_date_time.iso8601 }}
+  # defaults file for backups3
+local_backup_dir: /tmp/bck
+paths_to_backup:
+  path1:
+    path: /var/www
+    tag: www
+
+
+
+ 
+

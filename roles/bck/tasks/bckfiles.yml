@@ -1,15 +1,18 @@
 ---
-- name: Create Backups folder
-  file: path={{ remote_bk_dir }} state=directory
 
-- name: Compress sites folders
-  command: tar -zcvf {{ remote_bk_dir }}/{{ item.name }}.tar {{ item.folder }}
-  with_items: "{{ folders }}"
+- name: Verify if backup dir is created
+  file: path={{ local_backup_dir }} state=directory
 
-- name: Fetch folders backups
-  become: true
-  fetch: src="{{ remote_bk_dir }}/{{ item.name }}.tar" dest="{{ local_bk_dir }}"
-  with_items: "{{ folders }}"
+- name: Create tar file for Paths
+  archive:
+    path: "{{ item.value.path }}"
+    dest: /{{ local_backup_dir }}/{{ item.value.tag }}-backup-{{ ansible_date_time.date }}.tar.gz
+  with_dict: "{{ paths_to_backup }}"
 
-- name: Delete temp backup folder from server
-  file: path="{{ remote_bk_dir }}" state=absent
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+---
+
+- name: Get files in a folder
+  find:
+    paths: "/tmp/source/"
+  register: found_files
+
+- name: Get latest file
+  set_fact:
+    latest_file: "{{ found_files.files | sort(attribute='mtime',reverse=true) | first }}"
+
+
+- name: Copy the latest file to restore path    
+  copy:    
+    src: "{{ item.path }}"  
+    dest: /tmp/target/    
+    remote_src: yes     
+    owner: root    
+    group: root     
+    mode: '0644'    
+    force: yes  
+  with_items: "{{ latest_file }}"   
+
+
